@@ -241,12 +241,8 @@ class Header extends React.PureComponent {
     const { transitionPreset } = this.props;
 
     if (Platform.OS === 'android') {
-      if (!options.hasLeftComponent) {
-        style.left = 0;
-      }
-      if (!options.hasRightComponent) {
-        style.right = 0;
-      }
+      style.left = 0;
+      style.right = 0;
     } else if (
       Platform.OS === 'ios' &&
       !options.hasLeftComponent &&

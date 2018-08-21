@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  I18nManager,
-  Image,
-  Text,
-  View,
-  Platform,
-  StyleSheet,
+    I18nManager,
+    Image,
+    Text,
+    View,
+    Platform,
+    StyleSheet, TouchableOpacity,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 import TouchableItem from '../TouchableItem';
 
@@ -33,32 +34,11 @@ class HeaderBackButton extends React.PureComponent {
   };
 
   _renderBackImage() {
-    const { backImage, title, tintColor } = this.props;
-
-    let BackImage;
-    let props;
-
-    if (React.isValidElement(backImage)) {
-      return backImage;
-    } else if (backImage) {
-      BackImage = backImage;
-      props = {
-        tintColor,
-        title,
-      };
-    } else {
-      BackImage = Image;
-      props = {
-        style: [
-          styles.icon,
-          !!title && styles.iconWithTitle,
-          !!tintColor && { tintColor },
-        ],
-        source: defaultBackImage,
-      };
-    }
-
-    return <BackImage {...props} />;
+      return <NavigationIconButton
+          disabled
+          icon={require('./back-icon.png')}
+          tintColor={'white'}
+      />
   }
 
   render() {
@@ -150,3 +130,71 @@ const styles = StyleSheet.create({
 });
 
 export default HeaderBackButton;
+
+
+
+export class NavigationButton extends TouchableOpacity {
+
+    static propTypes = {
+        ...TouchableOpacity.propTypes,
+    };
+
+    static defaultProps = {
+        ...TouchableOpacity.defaultProps,
+        hitSlop: {top: 12, bottom: 12, left: 8, right: 8},
+    };
+
+    static contextTypes = {
+        tintColor: PropTypes.string,
+    };
+
+    buildProps() {
+        let {style, ...others} = this.props;
+
+        style = [{
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+            paddingLeft: 6,
+            paddingRight: 6,
+            overflow: 'hidden',
+            flexDirection: 'row',
+            alignItems: 'center',
+        }].concat(style);
+
+        this.props = {style, ...others};
+    }
+
+    render() {
+        this.buildProps();
+        return super.render();
+    }
+
+}
+
+
+
+export class NavigationIconButton extends NavigationButton {
+
+    static propTypes = {
+        ...NavigationButton.propTypes,
+        icon: Image.propTypes.source,
+        tintColor: PropTypes.string
+    }
+
+    buildProps() {
+        super.buildProps();
+
+        let {icon, children, ...others} = this.props;
+        if (icon) {
+            let iconStyle = {
+                tintColor: this.props.tintColor ? this.props.tintColor:this.context.tintColor,
+                width: 20,
+                height: 20,
+                resizeMode: 'contain'
+            };
+            children = <Image style={iconStyle} source={icon} />;
+        }
+
+        this.props = {icon, children, ...others};
+    }
+
+}
